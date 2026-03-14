@@ -37,6 +37,12 @@ function detectMemoryKeyword(text: string): boolean {
   return MEMORY_KEYWORD_PATTERN.test(textWithoutCode);
 }
 
+function generatePartId(): string {
+  const timestamp = Date.now().toString(16);
+  const random = Math.random().toString(36).substring(2, 10);
+  return `prt_${timestamp}${random}`;
+}
+
 export const OpenMemoryPlugin: Plugin = async (ctx: PluginInput) => {
   const { directory } = ctx;
   const scopes = getScopes(directory);
@@ -84,7 +90,7 @@ export const OpenMemoryPlugin: Plugin = async (ctx: PluginInput) => {
         if (detectMemoryKeyword(userMessage)) {
           log("chat.message: memory keyword detected");
           const nudgePart: Part = {
-            id: `openmemory-nudge-${Date.now()}`,
+            id: generatePartId(),
             sessionID: input.sessionID,
             messageID: output.message.id,
             type: "text",
@@ -130,7 +136,7 @@ export const OpenMemoryPlugin: Plugin = async (ctx: PluginInput) => {
 
           if (memoryContext) {
             const contextPart: Part = {
-              id: `openmemory-context-${Date.now()}`,
+              id: generatePartId(),
               sessionID: input.sessionID,
               messageID: output.message.id,
               type: "text",
